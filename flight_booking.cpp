@@ -1,5 +1,6 @@
 #include <iostream>
-
+#include <limits>
+#include <stdio.h>
 class FlightBooking {
 public:
 	FlightBooking(int id, int capacity, int reserved);
@@ -36,7 +37,7 @@ bool FlightBooking::reserveSeats(int number_of_seats)
 {
 	if (number_of_seats <= 0)
 		number_of_seats = 0;
-	else if ((((this->reserved + number_of_seats) * 100) / this->capacity) > 105)
+	else if (((this->reserved + number_of_seats)) > this->capacity * 1.05)
 		return false;
 	this->reserved += number_of_seats;
 	return true;
@@ -53,8 +54,8 @@ bool FlightBooking::cancelReservations(int number_of_seats)
 }
 
 int main() {
-	int reserved = 0,
-	  capacity = 0;
+	int reserved = 0, capacity = 0, seats = 0;
+	std::string command;
 	std::cout << "Provide flight capacity: ";
 	std::cin >> capacity;
 
@@ -62,36 +63,26 @@ int main() {
 	std::cin >> reserved;
 
 	FlightBooking booking(1, capacity, reserved);
-	std::string command = "";
+	bool res = true;
 	while (command != "quit")
 	{
-		booking.printStatus();
+		command = "";
+		if (res)
+			booking.printStatus();
 		std::cout << "What would you like to do?: ";
-		std::getline(std::cin, command);
-		size_t pos = command.find(' ');
-		if (command != "quit" && pos != std::string::npos)
-		{
-			std::string cmd = command.substr(0, pos);
-			if (cmd != "add" && cmd != "cancel")
-				std::cout << "Invalid command" << std::endl;
-			else
-			{
-				std::string num_of_seats = command.substr(pos + 1);
-				try {
-        			int number = std::stoi(command);
-					if (cmd == "add")
-						booking.reserveSeats(number);
-					else
-						booking.cancelReservations(number);
-				}
-				catch (const std::invalid_argument& e) {
-					std::cerr << "Error: The input provided is not a valid number." << std::endl;
-					std::cerr << "Exception details: " << e.what() << std::endl;
-				}
-			}
+		while (command.empty())
+			std::getline(std::cin, command);
+		if (sscanf(command.c_str(), "add %d", &seats))
+			res = booking.reserveSeats(seats);
+		else if (sscanf(command.c_str(), "cancel %d", &seats))
+			res = booking.cancelReservations(seats);
+		else {
+			if (command != "quit")
+				std::cout << "Unknown command" << std::endl;
+			continue;
 		}
-		else
-			std::cout << "Invalid command" << std::endl;
+		if (!res)
+			std::cout << "Cannot perform this operation" << std::endl;
 	}
 	return 0;
 }
