@@ -2,8 +2,8 @@
 #include <array>
 #include <sstream>
 
-constexpr int MAX_FLIGHTS = 10;
-constexpr double MAX_BOOKING_PERCENT = 1.05;
+#define MAX_FLIGHTS 10
+#define MAX_BOOKING_PERCENT 1.05
 
 class FlightBooking {
 public:
@@ -52,8 +52,11 @@ private:
 
     static std::array<FlightBooking, MAX_FLIGHTS> flights;
     static bool checkId(int id) {
-        if (id == 0) std::cout << "Cannot perform this operation: flight id can't be 0\n";
-        return id != 0;
+        if (id <= 0) {
+			std::cout << "Cannot perform this operation: flight id should be greater than 0\n";
+			return false;
+		}
+        return true;
     }
 };
 
@@ -96,8 +99,11 @@ void FlightBooking::deleteFlight(int id) {
 
 void FlightBooking::printAllFlights() {
     bool any = false;
+	std::cout << std::endl;
     for (const auto &f : flights) {
         if (f.getId() != 0) {
+			if (!any)
+				std::cout << "Flights in the system:\n";
             f.printStatus();
             any = true;
         }
@@ -105,12 +111,23 @@ void FlightBooking::printAllFlights() {
     if (!any) std::cout << "No flights in the system\n";
 }
 
+static void printFlightMenu() {
+    std::cout << "\n=== Flight Booking System ===\n";
+    std::cout << "Available commands:\n";
+    std::cout << "  create [id] [cap]   - Create a new flight with capacity cap\n";
+    std::cout << "  delete [id]         - Delete a flight\n";
+    std::cout << "  add [id] [n]        - Add n reservations to the flight\n";
+    std::cout << "  cancel [id] [n]     - Cancel n reservations from the flight\n";
+    std::cout << "  quit                - Exit the program\n";
+    std::cout << "-----------------------------------------\n";
+}
+
 int main() {
     std::string command;
 
     while (true) {
         FlightBooking::printAllFlights();
-
+		printFlightMenu();
         std::cout << "What would you like to do?: ";
         std::getline(std::cin, command);
         if (command.empty()) continue;
@@ -143,9 +160,8 @@ int main() {
                 f->cancelReservations(seats);
             }
         }
-        else {
+        else
             std::cout << "Unknown command\n";
-        }
     }
 
     return 0;
