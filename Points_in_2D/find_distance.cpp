@@ -28,7 +28,7 @@ double Point2D::distanceTo(Point2D that)
 
 int show_usage()
 {
-	cout << "Point coordinates format: x y" << endl;
+	cout << "Point coordinates format: [x] [y]" << endl;
 	return 0;
 }
 

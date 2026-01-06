@@ -57,7 +57,7 @@ string Line2D::toString()
 
 int show_usage()
 {
-	cout << "Point coordinates format: x y" << endl;
+	cout << "Point coordinates format: [x] [y]" << endl;
 	return 0;
 }
 
