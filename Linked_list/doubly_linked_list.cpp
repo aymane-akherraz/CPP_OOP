@@ -10,9 +10,10 @@ public:
 	int value;
 	int index;
 	Node *next;
+	Node *prev;
 };
 
-Node::Node(int val) : value(val), next(nullptr)
+Node::Node(int val) : value(val), prev(nullptr), next(nullptr)
 {
 	cout << "+Node" << endl;
 }
@@ -28,7 +29,7 @@ public:
 	List();
 	~List();
 	size_t size();
-	int  at(int idx);
+	Node* at(int idx);
 	List(const List &src);
 	List& operator=(const List &src);
 	void push_front(int value);
@@ -43,9 +44,7 @@ private:
 	size_t list_size;
 };
 
-List::List() : head(nullptr), tail(nullptr), list_size(0)
-{
-}
+List::List() : head(nullptr), tail(nullptr), list_size(0) {}
 
 List::~List()
 {
@@ -76,6 +75,7 @@ List::List(const List &src)
 		{
 			tmp->next = new Node(ptr->value);
 			tmp->next->index = ptr->index;
+			tmp->next->prev = tmp;
 			if (ptr->next == nullptr)
 				tail = tmp->next;
 			tmp = tmp->next;
@@ -114,21 +114,23 @@ List& List::operator=(const List &src)
 	return *this;
 }
 
-int  List::at(int idx)
+Node*  List::at(int idx)
 {
-	if (idx == (list_size - 1))
-            return tail->value;
 	if (idx >= 0 && idx < (int)list_size)
 	{
+		if (idx == (list_size - 1))
+			return tail;
+		else if (idx == (list_size - 2))
+			return tail->prev;
 		Node* ptr = head;
 		while (ptr)
 		{
 			if (ptr->index == idx)
-				return ptr->value;
+				return ptr;
 			ptr = ptr->next;
 		}
 	}
-	return -1;
+	return nullptr;
 }
 
 void List::push_back(int value)
@@ -136,6 +138,7 @@ void List::push_back(int value)
 	if (tail)
 	{
 		tail->next = new Node(value);
+		tail->next->prev = tail;
 		tail = tail->next;
 		tail->index = list_size;
 	}
@@ -161,13 +164,9 @@ bool List::pop_back(int &value)
 	}
 	else
 	{
-		Node *ptr = head;
-		while (ptr->next != tail)
-		{
-			ptr = ptr->next;
-		}
+		Node *new_tail = tail->prev;
 		delete tail;
-		tail = ptr;
+		tail = new_tail;
 		tail->next = nullptr;
 	}
 	list_size--;
@@ -180,6 +179,8 @@ void List::push_front(int value)
 	new_head->next = head;
 	if (head == nullptr)
 		tail = new_head;
+	else
+		head->prev = new_head;
 	head = new_head;
 	head->index = 0;
 	Node *ptr = head->next;
@@ -195,7 +196,10 @@ bool List::pop_front(int &value)
 {
 	Node *tmp = head;
 	if (head)
+	{
 		head = head->next;
+		head->prev = nullptr;
+	}
 	else
 		return false;
 	value = tmp->value;
@@ -228,14 +232,14 @@ void List::insert_at(int idx, int value)
 		push_back(value);
 	else
 	{
-		Node *ptr = head;
-		while (ptr->next->index != idx)
-			ptr = ptr->next;
-		Node *tmp = ptr->next;
-		ptr->next = new Node(value);
-		ptr->next->next = tmp;
-		ptr->next->index = idx;
-		ptr = ptr->next->next;
+		Node *new_node = new Node(value);
+		Node *tmp = at(idx);
+		tmp->prev->next = new_node;
+		new_node->prev = tmp->prev;
+		new_node->next = tmp;
+		tmp->prev = new_node;
+		new_node->index = idx;
+		Node *ptr = new_node->next;
 		while (ptr)
         {
             ptr->index++;
@@ -256,13 +260,11 @@ void List::remove_at(int idx)
 		pop_back(value);
 	else
 	{
-		Node *ptr = head;
-		while (ptr->next->index != idx)
-			ptr = ptr->next;
-		Node *tmp = ptr->next->next;
-		delete ptr->next;
-		ptr->next = tmp;
-		ptr = ptr->next;
+		Node *tmp = at(idx);
+		tmp->next->prev = tmp->prev;
+		tmp->prev->next = tmp->next;
+		Node *ptr = tmp->next;
+		delete tmp;
 		while (ptr)
 		{
 			ptr->index--;
@@ -282,7 +284,7 @@ void printList(List &list)
 	size_t size = list.size();
 	for (size_t i = 0; i < size; i++)
 	{
-		cout << "list[" << i << "] == " << list.at(i) << endl;
+		cout << "list[" << i << "] == " << list.at(i)->value << endl;
 	}
 }
 
@@ -304,7 +306,6 @@ int main()
 
 	list1.insert_at(1, 6);
 	list2.remove_at(2);
-	list2 = list1;
 
 	cout << "list1" << endl;
 	printList(list1);
