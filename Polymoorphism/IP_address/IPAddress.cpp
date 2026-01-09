@@ -74,11 +74,16 @@ int main()
 	string lines[3];
 	int i = 0;
 
-	while (getline(cin, line) && i < 3)
+	cout << "Enter first ip : \n";
+	while (i < 3 && getline(cin, line))
 	{
 		if (line.empty())
 			continue;
 		lines[i++] = line;
+		if (i == 1)
+			cout << "Enter second ip : \n";
+		else if (i == 2)
+			cout << "Enter third ip : \n";
 	}
 	IPAddress *ips[] = { new IPAddress(lines[0]), new IPAddressChecked(lines[1]), new IPAddressChecked(lines[2]) };
 	for (int i = 0; i < 3; i++)
