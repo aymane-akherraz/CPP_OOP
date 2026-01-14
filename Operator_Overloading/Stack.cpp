@@ -84,12 +84,13 @@ int main()
 	cout << "How many items should be pushed onto the stack: \n";
 	if (getline(cin, line))
 	{
-		size_t size;
+		int size;
 		istringstream iss(line);
-		if (iss >> size)
+		if (iss >> size && size >= 0)
 		{
-			cout << "Enter the items values one per line:\n";
-			for (size_t i = 0; i < size; i++)
+			if (size)
+				cout << "Enter the items values one per line:\n";
+			for (int i = 0; i < size; i++)
 			{
 				if (getline(cin, line))
 				{
@@ -97,24 +98,34 @@ int main()
 			        istringstream iss(line);
 					if (iss >> value)
 						my_stack << value;
+					else
+						cout << "Invalid number!\n";
 				}
+				else
+					return 0;
 			}
+			if (size == 0)
+				return 0;
 			cout << my_stack;
 			cout << "How many items you want to pop from the stack:\n";
 			if (getline(cin, line))
 			{
-				size_t amount;
+				int amount;
 				istringstream iss(line);
-				if (iss >> amount)
+				if (iss >> amount && amount >= 0)
 				{
-					for (size_t i = 0; i < amount; i++)
+					for (int i = 0; i < amount; i++)
 					{
 						int popped_value;
 						my_stack >> popped_value;
 						cout << popped_value << endl;
 					}
 				}
+				else
+                	cout << "Invalid number!\n";
 			}
 		}
+		else
+           	cout << "Invalid number!\n";
 	}
 }
