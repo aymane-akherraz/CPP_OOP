@@ -20,27 +20,34 @@ private:
 	void reduce();
 };
 
+int gcd(int a, int b)
+{
+	while (b)
+	{
+        int r = a % b;
+        a = b;
+        b = r;
+    }
+    return a;
+}
+
 void Fraction::reduce()
 {
-	int r, a, b;
-
-	a = numerator;
-	b = denominator;
-	while (a)
-	{
-		r = b % a;
-		b = a;
-		a = r;
-	}
-	numerator /= b;
-	denominator /= b;
+	int common_divisor = gcd(numerator, denominator);
+	numerator /= common_divisor;
+	denominator /= common_divisor;
 }
 
 Fraction::Fraction() : numerator(0), denominator(0) {}
 
 Fraction::Fraction(int numerator, int denominator)
-		: numerator(numerator), denominator(denominator) {}
-
+		: numerator(numerator)
+{
+	if (denominator == 0)
+		this->denominator = 1; // We should throw division by zero Exception here (to be fixed soon..)
+	else
+		this->denominator = denominator;
+}
 
 Fraction Fraction::times(Fraction that)
 {
@@ -60,20 +67,24 @@ Fraction Fraction::by(Fraction that)
     return res;
 }
 
+int lcm(int a, int b) {
+    return a / gcd(a, b) * b;
+}
+
 Fraction Fraction::plus(Fraction that)
 {
-	int num = (this->numerator * that.denominator) + (that.numerator * this->denominator);
-    int den = this->denominator * that.denominator;
-    Fraction res = Fraction(num, den);
+    int common_denom = lcm(this->denominator, that.denominator);
+	int numera = ((common_denom / this->denominator) * this->numerator) + ((common_denom / that.denominator) * that.numerator);
+    Fraction res = Fraction(numera, common_denom);
     res.reduce();
     return res;
 }
 
 Fraction Fraction::minus(Fraction that)
 {
-	int num = (this->numerator * that.denominator) - (that.numerator * this->denominator);
-    int den = this->denominator * that.denominator;
-    Fraction res = Fraction(num, den);
+	int common_denom = lcm(this->denominator, that.denominator);
+	int numera = ((common_denom / this->denominator) * this->numerator) - ((common_denom / that.denominator) * that.numerator);
+    Fraction res = Fraction(numera, common_denom);
     res.reduce();
     return res;
 }
@@ -93,7 +104,7 @@ string Fraction::toString()
 	else
 		buffer << numerator << "/" << denominator;
 	if (r && q)
-		buffer << " " << r << "/" << (denominator < 0? -denominator : denominator);
+		buffer << " " << abs(r) << "/" << abs(denominator);
 	return buffer.str();
 }
 

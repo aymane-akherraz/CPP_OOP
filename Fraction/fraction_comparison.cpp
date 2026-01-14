@@ -34,26 +34,34 @@ bool Fraction::isEqual(Fraction that)
 	return (this->toDouble() == that.toDouble());
 }
 
+int gcd(int a, int b)
+{
+	while (b)
+	{
+        int r = a % b;
+        a = b;
+        b = r;
+    }
+    return a;
+}
+
 void Fraction::reduce()
 {
-	int r, a, b;
-
-	a = abs(numerator);
-	b = abs(denominator);
-	while (a)
-	{
-		r = b % a;
-		b = a;
-		a = r;
-	}
-	numerator /= b;
-	denominator /= b;
+	int common_divisor = gcd(numerator, denominator);
+	numerator /= common_divisor;
+	denominator /= common_divisor;
 }
 
 Fraction::Fraction() : numerator(0), denominator(0) {}
 
 Fraction::Fraction(int numerator, int denominator)
-		: numerator(numerator), denominator(denominator) {}
+		: numerator(numerator)
+{
+	if (denominator == 0)
+		this->denominator = 1; // We should throw division by zero Exception here (to be fixed soon..)
+	else
+		this->denominator = denominator;
+}
 
 double Fraction::toDouble()
 {
@@ -72,7 +80,7 @@ string Fraction::toString()
 	else
 		buffer << numerator << "/" << denominator;
 	if (r && q)
-		buffer << " " << r << "/" << abs(denominator);
+		buffer << " " << abs(r) << "/" << abs(denominator);
 	return buffer.str();
 }
 
