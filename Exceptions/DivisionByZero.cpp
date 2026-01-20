@@ -9,18 +9,22 @@ public:
     }
 };
 
+void division(const int& numerator, const int& denominator) throw(DivideByZeroException)
+{
+	 if (denominator == 0) {
+            throw DivideByZeroException();
+        }
+		cout << "Result: " << numerator / denominator << endl;
+}
+
 int main() {
     int numerator, denominator;
     cout << "Enter numerator: ";
     cin >> numerator;
     cout << "Enter denominator: ";
     cin >> denominator;
-    
     try {
-        if (denominator == 0) {
-            throw DivideByZeroException();
-        }
-		cout << "Result: " << numerator / denominator << endl;
+		division(numerator, denominator);
     }
     catch (const DivideByZeroException& ex) {
         cout << ex.what() << endl;
