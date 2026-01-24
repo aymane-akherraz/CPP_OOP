@@ -10,7 +10,6 @@ protected:
 	static bool check_ip(const string& ip);
 public:
 	IPAddress(const string& ip);
-	IPAddress(const IPAddress& src);
 	static bool isPowerOf2(int rangeValue);
 	void print(const string& mask);
 };
@@ -26,11 +25,6 @@ IPAddress::IPAddress(const string& ip)
 	this->ip = ip;
 }
 
-IPAddress::IPAddress(const IPAddress& src)
-{
-	*this = src;
-}
-
 bool IPAddress::check_ip(const string& ip)
 {
 	char dot;
@@ -39,18 +33,18 @@ bool IPAddress::check_ip(const string& ip)
 	while (iss >> n)
 	{
 		if (n < 0 || n > 255)
-			throw invalid_argument("invalid IP number");
+			throw invalid_argument("invalid IP number " + to_string(n));
 		parts++;
 		if (parts < 4)
 		{
 			if (!(iss >> dot) || iss.eof() || dot != '.')
-				throw invalid_argument("invalid IP number");
+				throw invalid_argument("invalid IP");
 		}
 	}
 	if (!iss.eof())
 		iss >> ws;
 	if (!iss.eof() || parts != 4)
-		throw invalid_argument("invalid IP number");
+		throw invalid_argument("invalid IP");
 	return true;
 }
 
