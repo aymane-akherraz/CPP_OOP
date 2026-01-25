@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 
 #define TOTAL_DISKS 3
 
@@ -112,13 +113,13 @@ int main()
 				int src_tower = cmd / 10;
 				int dest_tower = cmd % 10;
 				if (i != 1 || src_tower < 1 || src_tower > 3 || dest_tower < 1 || dest_tower > 3)
-					throw logic_error("Invalid command: please enter 2 digits between 1 and 3");
+					throw invalid_argument("Invalid command: please enter 2 digits between 1 and 3");
 				if (src_tower != dest_tower)
 					Tower::move_disk(t[src_tower - 1], t[dest_tower - 1]);
 				Tower::print(t);
 			}
 			else
-				throw logic_error("Invalid command: please enter 2 digits between 1 and 3");
+				throw invalid_argument("Invalid command: please enter 2 digits between 1 and 3");
 		}
 		catch (const logic_error& ex){
 			cout << ex.what() << endl;
