@@ -54,7 +54,7 @@ void Tower::move_disk(Tower& src, Tower& dest)
 {
 	if (src.num_of_disks)
 	{
-		if (src.disks[src.num_of_disks - 1].get_size() > dest.disks[dest.num_of_disks - 1].get_size())
+		if (dest.num_of_disks && src.disks[src.num_of_disks - 1].get_size() > dest.disks[dest.num_of_disks - 1].get_size())
 			throw logic_error("Can't move disk: the disk is bigger than the one in the target tower");
 		src.num_of_disks--;
 		dest.disks[dest.num_of_disks].set_size(src.disks[src.num_of_disks].get_size());
@@ -67,7 +67,7 @@ void Tower::move_disk(Tower& src, Tower& dest)
 
 void Tower::print(Tower *t)
 {
-	for (int i = 0; i < TOTAL_DISKS; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		cout << "tower_" << t[i].tower_number << ": ";
 		if (t[i].num_of_disks)
